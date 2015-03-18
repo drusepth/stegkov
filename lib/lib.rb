@@ -65,7 +65,6 @@ class Stegkov
   end
 
   def humanize string
-    puts "humanizing: #{string}"
     string.downcase
       .gsub(/\s{2,}/, ' ')
       .gsub(/ i([!\?\.\s])/, ' I\1')
