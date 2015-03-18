@@ -24,7 +24,20 @@ class Stegkov
   end
 
   def decode encoded_message, key
-
+    key_index = 0
+    sentinel_active = false
+    decoded_message = encoded_message.split(' ').map do |word|
+      if sentinel_active
+        sentinel_active = false
+        word
+      elsif word[0] == key[key_index]
+        sentinel_active = true
+        key_index += 1
+        nil
+      else
+        nil
+      end
+    end.compact.join(' ')
   end
 
   def random_words num, key
