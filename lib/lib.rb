@@ -1,7 +1,6 @@
 class Stegkov
   def dictionary
-    # todo cache this
-    File.foreach('/usr/share/dict/american-english').map(&:downcase).map(&:strip).map{|word| word.tr('^A-Za-z', '')}.uniq.select{|word| word.length > 3}
+    @dictionary ||= File.foreach('/usr/share/dict/american-english').map(&:downcase).map(&:strip).map{|word| word.tr('^A-Za-z', '')}.uniq.select{|word| word.length > 3}
   end
 
   def generate_key_for unencoded_message
