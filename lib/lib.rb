@@ -23,7 +23,7 @@ class Stegkov
     key = generate_key_for unencoded_message
     key_index = -1
 
-    [unencoded_message.downcase.split(' ').map do |unencoded_word|
+    [humanize(unencoded_message.downcase.split(' ').map do |unencoded_word|
       key_index = key_index == key.length ? 0 : key_index + 1
       [
         random_words(rand(15), key[key_index]),                      # Random number of prefixing words
@@ -31,13 +31,13 @@ class Stegkov
         unencoded_word,                                              # Next word to inject
         random_words(rand(5), key[key_index])                        # Random number of affixing words
       ]
-    end.flatten.join(' ').capitalize, key]
+    end.flatten.join(' ').capitalize), key]
   end
 
   def decode encoded_message, key
     key_index = 0
     sentinel_active = false
-    decoded_message = encoded_message.split(' ').map do |word|
+    humanize(encoded_message.split(' ').map do |word|
       if sentinel_active
         sentinel_active = false
         word
@@ -48,7 +48,7 @@ class Stegkov
       else
         nil
       end
-    end.compact.join(' ')
+    end.compact.join(' '))
   end
 
   def random_words num, key
@@ -58,5 +58,13 @@ class Stegkov
       puts "Generated result: #{result}"
       return result unless result.split(' ').map{|w|w[0]}.include? key
     end
+  end
+
+  def humanize string
+    string.downcase
+      .tr('  ', ' ')
+      .split('. ').map(&:capitalize).join('. ')
+      .split('! ').map(&:capitalize).join('! ')
+      .split('? ').map(&:capitalize).join('? ')
   end
 end
