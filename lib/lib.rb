@@ -1,6 +1,18 @@
+require 'marky_markov'
+
 class Stegkov
   def dictionary
-    @dictionary ||= File.foreach('/usr/share/dict/american-english').map(&:downcase).map(&:strip).map{|word| word.tr('^A-Za-z', '')}.uniq.select{|word| word.length > 3}
+    @dictionary ||= begin
+      @markov ||= MarkyMarkov::Dictionary.new('dictionary', 3)
+      @markov.parse_file 'corpus/ulysses.txt'
+      @markov.save_dictionary!
+
+      File.foreach('/usr/share/dict/american-english').map(&:downcase).map(&:strip).map{|word| word.tr('^A-Za-z', '')}.uniq.select{|word| word.length > 3}
+    end
+  end
+
+  def markov
+    @markov ||= MarkyMarkov::Dictionary.new('dictionary')
   end
 
   def generate_key_for unencoded_message
@@ -40,8 +52,11 @@ class Stegkov
   end
 
   def random_words num, key
-    (1..num).map do |context_word|
-      dictionary.reject{|word| word[0] == key}.sample
+    #todo roll my own markov generation so I can use custom heuristics + avoid key without having to regenerate
+    loop do
+      result = markov.generate_n_words num
+      puts "Generated result: #{result}"
+      return result unless result.split(' ').map{|w|w[0]}.include? key
     end
   end
 end
