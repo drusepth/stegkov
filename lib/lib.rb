@@ -7,7 +7,12 @@ class Stegkov
       @markov.parse_file 'corpus/ulysses.txt'
       @markov.save_dictionary!
 
-      File.foreach('/usr/share/dict/american-english').map(&:downcase).map(&:strip).map{|word| word.tr('^A-Za-z', '')}.uniq.select{|word| word.length > 3}
+      File.foreach('/usr/share/dict/american-english')
+        .map(&:downcase)
+        .map(&:strip)
+        .map{|word| word.tr('^A-Za-z', '')}
+        .uniq
+        .select{|word| word.length > 3}
     end
   end
 
@@ -55,16 +60,19 @@ class Stegkov
     #todo roll my own markov generation so I can use custom heuristics + avoid key without having to regenerate
     loop do
       result = markov.generate_n_words num
-      puts "Generated result: #{result}"
       return result unless result.split(' ').map{|w|w[0]}.include? key
     end
   end
 
   def humanize string
+    puts "humanizing: #{string}"
     string.downcase
-      .tr('  ', ' ')
-      .split('. ').map(&:capitalize).join('. ')
-      .split('! ').map(&:capitalize).join('! ')
-      .split('? ').map(&:capitalize).join('? ')
+      .gsub(/\s{2,}/, ' ')
+      .gsub(/ i([!\?\.\s])/, ' I\1')
+      .gsub(/([\.!\?] \w)+/, &:upcase) # properly capitalize after punctuation
+      .gsub(/^\w/, &:upcase)
+      .strip
+      .gsub(/[\,;]$/, '')
+      .gsub(/([^!\.\?])$/, '\1.')
   end
 end
