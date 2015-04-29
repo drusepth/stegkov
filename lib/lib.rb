@@ -3,7 +3,7 @@ require 'marky_markov'
 class Stegkov
   def dictionary
     @dictionary ||= begin
-      @markov ||= MarkyMarkov::Dictionary.new('dictionary', 3)
+      @markov = MarkyMarkov::Dictionary.new('dictionary', 3)
       @markov.parse_file 'corpus/ulysses.txt'
       @markov.save_dictionary!
 
